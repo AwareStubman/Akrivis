@@ -3,10 +3,14 @@
 // Vertex shader inputs
 in vec2 fTexCoord;
 
-// Uniform buffers
+// Uniform buffer samplers
 uniform sampler2D colortex0;
 
 void main()
 {
-    gl_FragColor = texture(colortex0, fTexCoord);
+    vec3 color = texture(colortex0, fTexCoord).rgb;
+    //color = 1.0 - exp(-color * 1.0);
+    color = pow(color, vec3(1.0/2.2));
+
+    gl_FragColor = vec4(color, 1.0);
 }
