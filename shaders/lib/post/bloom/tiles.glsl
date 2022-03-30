@@ -2,21 +2,27 @@ bool getCurrentTile(inout vec2 texcoord, int level)
 {
     // False = not in tile
     // True = is in tile
-    float offset_x = 1.0 - 1.0 / float(1 << level);
-    float upscale = float(1 << (level+1));
-    float downscale = 1.0 / upscale;
+    float offset = 1.0 - 1.0 / float(1 << level);
+    float size = 1.0 / float(1 << (level+1));
 
-    texcoord = (texcoord - vec2(offset_x, 0.0)) * upscale;
-    return (fTexCoord.x >= offset_x && fTexCoord.x < offset_x + downscale && fTexCoord.y < downscale);
+    vec2 minBound = vec2(offset);
+    vec2 maxBound = vec2(offset + size);
+
+    bool isInTile = all(greaterThanEqual(texcoord, minBound)) && all(lessThanEqual(texcoord, maxBound));
+    texcoord = clamp((texcoord - minBound) / (maxBound - minBound), 0.0, 1.0);
+    return isInTile;
 }
 
 vec3 sampleTile(vec2 texcoord, sampler2D tileBuffer, int level)
 {
-    float offset_x = 1.0 - 1.0 / float(1 << level);
+    float offset = 1.0 - 1.0 / float(1 << level);
     float size = 1.0 / float(1 << (level+1));
 
-    // Convert the [0, 1] range of texcoord to [offset_x, offset_x+size] range
-    vec2 sampleCoord = mix(vec2(offset_x, 0.0), vec2(offset_x + size, size), texcoord);
+    vec2 minBound = vec2(offset);
+    vec2 maxBound = vec2(offset + size);
+
+    // Convert the [0, 1] ranged texcoord to [offset, offset+size] range
+    vec2 sampleCoord = mix(minBound, maxBound, texcoord);
 
     return texture(tileBuffer, sampleCoord).rgb;
 }
