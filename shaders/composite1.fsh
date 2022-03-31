@@ -14,20 +14,24 @@ vec2 screenResolution = vec2(viewWidth, viewHeight);
 
 // File includes
 #include "/lib/post/bloom/tiles.glsl"
+#include "/lib/textureInterpolations.glsl"
 
 /* RENDERTARGETS: 0 */
 layout (location = 0) out vec4 mainBuffer;
 
-// This pass is responsible for averaging the bloom tiles and apply them to the main buffer
+/*
+This pass is responsible for averaging the bloom tiles and apply them to the main buffer
+*/
 
 void main()
 {
     vec3 color = vec3(0.0);
 
+    //color = texture(colortex10, fTexCoord).rgb;
     // Take the average of all 7 tiles
     for (int i = 0; i < 7; i++)
     {
-        color += sampleTile(fTexCoord, colortex10, i);
+        color += textureBicubic(colortex10, getTileCoord(fTexCoord, i), screenResolution).rgb;
     }
     color /= 7.0;
 

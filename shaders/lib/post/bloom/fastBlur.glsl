@@ -21,9 +21,9 @@ vec3 fastGaussBlur(vec2 texcoord, int kSize)
         for (int y = -2; y <= 2; y++)
         {
             float weight = gaussKernel_3[abs(x)] * gaussKernel_3[abs(y)];
-            vec2 sampleCoord = texcoord + vec2(x, y) / (screenResolution/exp2(lod));
+            vec2 sampleCoord = texcoord + vec2(x, y) / screenResolution * exp2(lod);
 
-            if (clamp(sampleCoord, 0.0, 1.0) != sampleCoord) continue;
+            //if (clamp(sampleCoord, 0.0, 1.0) != sampleCoord) continue;
 
             result += texture(colortex0, sampleCoord, lod).rgb * weight;
             accum_w += weight;

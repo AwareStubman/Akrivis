@@ -25,7 +25,7 @@ void main()
 
     // add emissive
     float emission = texture(specular, fTexCoord).a;
-    color.rgb += emission <= 0.99607843 ? emission / 0.99607843 * 10.0 * albedo.rgb : vec3(0.0);
+    color.rgb += emission <= 0.99607843 ? emission / 0.99607843 * 100.0 * albedo.rgb : vec3(0.0);
 
     mainBuffer = color;
 }

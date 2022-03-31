@@ -17,3 +17,5 @@ This is a shader made for the Optifine mod (and probably Iris, but I doubt) for 
    - Bloom tile generation + 1 pass gaussian blur to them, 7 tiles
 2. composite1
    - averaging of all 7 bloom tiles, then applied to the whole screen
+3. final
+   - Apply tonemap and Linear->sRGB conversion

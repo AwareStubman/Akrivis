@@ -44,7 +44,7 @@ void main()
 
         if (isInTile)
         {
-            color += fastGaussBlur(newCoord, int(dot(screenResolution, vec2(0.5*0.01)) + 0.5));
+            color += fastGaussBlur(newCoord, int(dot(screenResolution, vec2(0.5 * 0.0075)) + 0.5));
             break;
         }
     }
