@@ -12,10 +12,17 @@ This is a shader made for the Optifine mod (and probably Iris, but I doubt) for 
 - colortex10
   - Bloom tiles
 
+### Gbuffer passes
+1. gbuffers_terrain
+   - Discard transparent fragments
+   - Convert albedo to Linear sRGB
+   - Apply LabPBR emissives
 ### Fullscreen passes
 1. composite
-   - Bloom tile generation + 1 pass gaussian blur to them, 7 tiles
+   - Convert sky's color space from sRGB to Linear sRGB
 2. composite1
-   - averaging of all 7 bloom tiles, then applied to the whole screen
-3. final
-   - Apply tonemap and Linear->sRGB conversion
+   - Bloom tile generation + 1 pass gaussian blur to them, 5 tiles
+3. composite2
+   - averaging of all 5 bloom tiles, then applied to the whole screen
+4. final
+   - Apply tonemap and Linear->sRGB conversion + post processing

@@ -4,8 +4,7 @@
 in vec2 fTexCoord;
 
 // Uniform buffer samplers
-uniform sampler2D colortex0; // main buffer
-uniform sampler2D colortex10; // bloom tile
+uniform sampler2D colortex0;
 
 // Screen resolution
 uniform float viewWidth;
@@ -13,30 +12,41 @@ uniform float viewHeight;
 vec2 screenResolution = vec2(viewWidth, viewHeight);
 
 // File includes
+#include "/lib/constants/preprocessor.glsl"
+#include "/lib/post/bloom/fastBlur.glsl"
 #include "/lib/post/bloom/tiles.glsl"
-#include "/lib/textureInterpolations.glsl"
 
-/* RENDERTARGETS: 0 */
-layout (location = 0) out vec4 mainBuffer;
+/* RENDERTARGETS: 10 */
+layout (location = 0) out vec3 bloomTile;
 
 /*
-This pass is responsible for averaging the bloom tiles and apply them to the main buffer
+Enable mipmapping to prevent flickering when in motion
+And generate bloom tiles
 */
+/*
+const bool colortex0MipmapEnabled = true;
+*/
+
+// We will now do 5 bloom tiles
 
 void main()
 {
     vec3 color = vec3(0.0);
 
-    //color = texture(colortex10, fTexCoord).rgb;
-    // Take the average of all 7 tiles
-    for (int i = 0; i < 7; i++)
+    // Run a for loop that checks what mip level a pixel is in
+    //runs 5 times because we're doing 5 bloom tiles
+    for (int i = 0; i < 5; i++)
     {
-        color += textureBicubic(colortex10, getTileCoord(fTexCoord, i), screenResolution).rgb;
+        vec2 newCoord = fTexCoord;
+        bool isInTile = getCurrentTile(newCoord, i);
+
+        if (isInTile)
+        {
+            // Do a 5x5 gaussian blur
+            color += fastGaussBlur(newCoord, i+1);
+            break;
+        }
     }
-    color /= 7.0;
 
-    // And apply it by mixing, mix because it will be "energy conserving" unlike when you just add it on top
-    color = mix(texture(colortex0, fTexCoord).rgb, color, 0.5);
-
-    mainBuffer = vec4(color, 1.0);
+    bloomTile = color;
 }
